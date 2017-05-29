@@ -1,4 +1,4 @@
-// console.log("main.js is ok.");
+
 require(["scripts/dataTrans"],function(dataTrans){
 
     // ----json保存的图片资源和路径相关----
@@ -16,10 +16,23 @@ require(["scripts/dataTrans"],function(dataTrans){
 
     // -------单张图片控制器---------
     var ImgFigure = React.createClass({
+
+        handleClick: function(event){
+
+            if(this.props.arrange.isCenter){
+                this.props.inverse();
+            }else{
+                this.props.center();
+            }
+
+            event.stopPropagation();
+            event.preventDefault();
+        },
+
         render: function(){
 
             var styleObj = {};
-
+            //角度、旋转、z轴、翻转 样式确定：
             if(this.props.arrange.pos){
                 styleObj = this.props.arrange.pos;
             }
@@ -30,12 +43,24 @@ require(["scripts/dataTrans"],function(dataTrans){
                 }.bind(this));
             }
 
+            if(this.props.arrange.isCenter){
+                styleObj.zIndex = 11;
+            }/*将中心图片z轴方向置于靠前的层*/
+
+            var imgFigureClassName = "img-figure";
+            imgFigureClassName += this.props.arrange.isInverse ? " is-inverse" : "";
+            //返回模板：
             return (
-                <figure className="img-figure" style={styleObj}>
+                <figure className={imgFigureClassName} style={styleObj} onClick={this.handleClick}>
                     <img src={imagePath + this.props.data.filename}
                          alt={this.props.data.title}/>
                     <figcaption>
                         <h2 className="img-title">{this.props.data.title}</h2>
+                        <div className="img-back" onClick={this.handleClick}>
+                            <p>
+                                {this.props.data.desc}
+                            </p>
+                        </div>
                     </figcaption>
                 </figure>
             );
@@ -59,6 +84,19 @@ require(["scripts/dataTrans"],function(dataTrans){
                 topY: [0,0]
             }
         },
+// 利用闭包保存并更新图片的正反状态：
+        inverse: function (index){
+            return function(){
+                var imgsArrangeArr = this.state.imgsArrangeArr;
+
+                imgsArrangeArr[index].isInverse = ! imgsArrangeArr[index].isInverse;
+
+                this.setState({
+                    imgsArrangeArr: imgsArrangeArr
+                });
+            }.bind(this);
+        },
+
 // 对图片中心进行重定位：
         rearrange: function(centerIndex){
             var imgsArrangeArr = this.state.imgsArrangeArr,
@@ -78,9 +116,11 @@ require(["scripts/dataTrans"],function(dataTrans){
                 // 中心图片安排：
                 imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex,1);
 
-                imgsArrangeCenterArr[0].pos = centerPos;
-
-                imgsArrangeCenterArr[0].rotate = 0;
+                imgsArrangeCenterArr[0] = {
+                    pos: centerPos,
+                    rotate: 0,
+                    isCenter: true
+                };
 
                 // 上方图片安排：
                 topImgSpliceIndex = Math.ceil(Math.random() * (imgsArrangeArr.length - topImgNum));
@@ -93,7 +133,8 @@ require(["scripts/dataTrans"],function(dataTrans){
                             top: getRangeRandom(vPosRangeTopY[0],vPosRangeTopY[1])
                     
                         },
-                        rotate: get30DegRandom()
+                        rotate: get30DegRandom(),
+                        isCenter: false
                     };
                 });
                 // 左右图片安排：
@@ -112,7 +153,8 @@ require(["scripts/dataTrans"],function(dataTrans){
                             left: getRangeRandom(hPosRangeLORX[0],hPosRangeLORX[1])
                     
                         },
-                        rotate: get30DegRandom()
+                        rotate: get30DegRandom(),
+                        isCenter: false
                     };
                 }
 
@@ -127,6 +169,12 @@ require(["scripts/dataTrans"],function(dataTrans){
                     imgsArrangeArr: imgsArrangeArr
                 });
         },
+// 用于居中被点击的图片：（闭包）
+        center: function(index){
+            return function(){
+                this.rearrange(index);
+            }.bind(this);
+        },
 // 状态初始化：
         getInitialState: function(){
             return {
@@ -137,7 +185,8 @@ require(["scripts/dataTrans"],function(dataTrans){
                     //         top: "0"
                     //     },
                     //     rotate: 0,
-                    //     isInverse: false
+                    //     isInverse: false,
+                    //     isCenter: false
                     // }
                 ]
             };
@@ -191,11 +240,12 @@ require(["scripts/dataTrans"],function(dataTrans){
                             top: 0
                         },
                         rotate: 0,
-                        isInverse: false
+                        isInverse: false,
+                        isCenter: false
                     };
                 }/*解析：getinitialstate中只是将imgsArrangeArr出现了一下，里面没有任何结构可言；此处render时，如果发现arrangearr没有内容，就初始化一下结构和内容。*/
 
-                imgFigures.push(<ImgFigure data={value} ref={"imgFigure"+index} arrange={this.state.imgsArrangeArr[index]}/>);
+                imgFigures.push(<ImgFigure data={value} ref={"imgFigure"+index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}/>);
 
             }.bind(this));
 
