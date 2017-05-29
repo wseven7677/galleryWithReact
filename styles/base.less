@@ -1,3 +1,5 @@
+@import "variables.less";
+
 *{
 	padding: 0;
 	margin: 0;
@@ -7,7 +9,7 @@ html,body{
 	width: 100%;
 	height: 100%;
 
-	background-color: #222;
+	background-color: @bgColor;
 }
 
 #outter{
@@ -20,7 +22,7 @@ html,body{
 	position: relative;
 
 	width: 100%;
-	height: 680px;
+	height: @stageH;
 }
 /* stage -- end*/
 
@@ -33,19 +35,21 @@ html,body{
 	height: 100%;
 	overflow: hidden;
 
-	background-color: #ddd;
+	background-color: @imgSecBgColor;
 
-	perspective: 1800px;
+	perspective: 1800px;//景深
 
 	.img-figure{
 		position: absolute;
 
-		width: 320px;
-		height: 360px;
+		width: @picW;
+		height: @picH;
 		margin: 0;
-		padding: 40px;
+		padding: @picPadding;
 
-		background-color: #fff;
+		border-radius: 3px;
+
+		background-color: @imgFigBgColor;
 
 		cursor: pointer;
 		box-sizing: border-box;
@@ -54,7 +58,7 @@ html,body{
 		transform-origin: 0 50% 0;
 
 		&.is-inverse{
-			transform: translate(320px) rotateY(180deg);
+			transform: translate(@picW) rotateY(180deg);
 		}
 
 		img{
@@ -64,25 +68,25 @@ html,body{
 		figcaption{
 			text-align: center;
 
-			.img-title{
-				margin: 20px 0 0 0;
+			.img-title{//标题
+				margin: 10px 0 0 0;
 
-				color: #a7a0a2;
-				font-size: 16px;
+				color: @imgTitleColor;
+				font-size: @imgTitleFs;
 			}
-			.img-back{
+			.img-back{//反面
 				position: absolute;
 				left: 0;
 				top: 0;
 				width: 100%;
 				height: 100%;
-				padding: 50px 40px;
+				padding: @imgBackPadding;
 				overflow: auto;
-				color:#a7a0a2;
-				font-size: 22px;
+				color: @imgBackColor;
+				font-size: @imgBackFs;
 				line-height: 1.25;
 				text-align: left;
-				background-color: #fff;
+				background-color: @imgBackBgColor;
 				box-sizing: border-box;
 				transform: rotateY(180deg);
 				backface-visibility: hidden;
