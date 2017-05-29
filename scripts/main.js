@@ -111,21 +111,28 @@ require(["scripts/dataTrans"],function(dataTrans){
                 vPosRangeX = vPosRange.x,
 
                 imgsArrangeTopArr = [],
-                topImgNum = Math.ceil(Math.random() * 2),
+                topImgNum = Math.ceil(Math.random() * 2)-1,//上方有0个或1个图片
                 topImgSpliceIndex = 0,
-                // 中心图片安排：
                 imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex,1);
-
+// console.log("上方有几个图片："+topImgNum);
+// console.log("中心图的序号:"+centerIndex);
+                // 中心图片安排：
                 imgsArrangeCenterArr[0] = {
                     pos: centerPos,
                     rotate: 0,
                     isCenter: true
                 };
-
+// console.log(imgsArrangeCenterArr);
+// console.log(imgsArrangeArr);
                 // 上方图片安排：
                 topImgSpliceIndex = Math.ceil(Math.random() * (imgsArrangeArr.length - topImgNum));
                 imgsArrangeTopArr = imgsArrangeArr.splice(topImgSpliceIndex,topImgNum);
-                
+// console.log("上方的图片从此序号开始划分：");
+// console.log(topImgSpliceIndex);
+// console.log("上方的图片：");
+// console.log(imgsArrangeTopArr);
+// console.log("剩下的图片：");
+// console.log(imgsArrangeArr);
                 imgsArrangeTopArr.forEach(function(value,index){
                     imgsArrangeTopArr[index] = {
                         pos: {
@@ -160,7 +167,7 @@ require(["scripts/dataTrans"],function(dataTrans){
 
                 if(imgsArrangeTopArr && imgsArrangeTopArr[0]){
                     imgsArrangeArr.splice(topImgSpliceIndex,0,imgsArrangeTopArr[0]);
-                }
+                }/*如果上方有一张图片，就把这张图片的信息插入回imgarrarr中 */
 
                 imgsArrangeArr.splice(centerIndex,0,imgsArrangeCenterArr[0]);
 
